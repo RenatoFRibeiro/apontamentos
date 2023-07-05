@@ -1,0 +1,41 @@
+import requests
+import credentials
+#credentials is a file where I hardcode usernames and passwords
+from requests_ntlm import HttpNtlmAuth
+
+# Configurações de autenticação
+sharepoint_url = credentials.sharepoint_base_url
+username = credentials.sharepoint_user
+password = credentials.sharepoint_password
+adfs_url = "<your_adfs_url>"
+adfs_username = credentials.sharepoint_user
+adfs_password = credentials.sharepoint_password
+
+# Obter o formulário de autenticação do ADFS
+session = requests.Session()
+response = session.get(adfs_url)
+login_data = {
+    'UserName': adfs_username,
+    'Password': adfs_password,
+    'AuthMethod': 'FormsAuthentication'
+}
+response = session.post(adfs_url, data=login_data)
+
+# Extrair o token de autenticação SAML
+token_start = response.text.find('<input type="hidden" name="SAMLResponse" value="') + len(
+    '<input type="hidden" name="SAMLResponse" value="')
+token_end = response.text.find('"/>', token_start)
+saml_token = response.text[token_start:token_end]
+
+# Autenticação NTLM com SharePoint
+session.auth = HttpNtlmAuth(username, password)
+session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
+
+# Postar o token SAML para autenticação no SharePoint
+response = session.post(sharepoint_url, data={'SAMLResponse': saml_token})
+
+# Realizar uma solicitação GET para obter o conteúdo de uma página do SharePoint autenticada
+response = session.get(sharepoint_url + "/_layouts/15/viewlsts.aspx")
+
+# Imprimir o conteúdo da página
+print(response.content)
