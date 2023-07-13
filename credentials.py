@@ -1,0 +1,7 @@
+sharepoint_base_url = '...'
+sharepoint_user = '...'
+sharepoint_password = '...'
+folder_in_sharepoint = '...'
+adfs_url = '...'
+adfs_username = '...'
+adfs_password = '...'
