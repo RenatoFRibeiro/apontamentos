@@ -1,7 +1,8 @@
 import pygame as pg
 import moderngl as mlg
 import sys
-from model import *
+from model_cube import *
+#from model_triangle import *
 from camera import Camera
 
 
@@ -20,6 +21,8 @@ class GraphicsEngine:
         pg.display.set_mode(self.WIN_SIZE, flags=pg.OPENGL | pg.DOUBLEBUF)
         # detect and use existing opengl context
         self.ctx = mlg.create_context()
+        self.ctx.enable(flags=mlg.DEPTH_TEST | mlg.CULL_FACE)
+        # ctx.front_face='cw'
         # create an object to help track time
         self.clock = pg.time.Clock()
         self.time = 0
@@ -38,7 +41,7 @@ class GraphicsEngine:
 
     def render(self):
         # clear framebuffer
-        self.ctx.clear(color=(0.08, 0.56, 0.8))
+        self.ctx.clear(color=(0.5, 0.5, 0.5))
         # render scene
         self.scene.render()
         # swap buffers
