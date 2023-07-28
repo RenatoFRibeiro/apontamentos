@@ -4,7 +4,7 @@ import sys
 from model_cube import *
 #from model_triangle import *
 from camera import Camera
-
+from light import Light
 
 
 class GraphicsEngine:
@@ -19,6 +19,9 @@ class GraphicsEngine:
         pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK, pg.GL_CONTEXT_PROFILE_CORE)
         # create opengl context
         pg.display.set_mode(self.WIN_SIZE, flags=pg.OPENGL | pg.DOUBLEBUF)
+        #mouse settings
+        pg.mouse.set_visible(False)
+        pg.event.set_grab(True)
         # detect and use existing opengl context
         self.ctx = mlg.create_context()
         self.ctx.enable(flags=mlg.DEPTH_TEST | mlg.CULL_FACE)
@@ -26,6 +29,9 @@ class GraphicsEngine:
         # create an object to help track time
         self.clock = pg.time.Clock()
         self.time = 0
+        self.delta_time = 0
+        # light
+        self.light = Light()
         # camera
         self.camera = Camera(self)
         # scene
@@ -54,7 +60,7 @@ class GraphicsEngine:
         while True:
             self.get_time()
             self.check_events()
-            #self.camera.update()
+            self.camera.update()
             self.render()
             self.delta_time = self.clock.tick(60)
 
